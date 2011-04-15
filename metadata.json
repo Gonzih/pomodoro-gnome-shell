@@ -1,0 +1,7 @@
+{
+"shell-version": ["3.0.0.2"],
+"uuid": "pomodoro@iam.gonzih.org",
+"name": "Pomodoro",
+"description": "Gnome3 shell extension for pomodoro time managment",
+"url": "https://github.com/Gonzih/pomodoro-gnome-shell"
+}
