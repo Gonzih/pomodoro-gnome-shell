@@ -14,14 +14,16 @@ const Lang = imports.lang;
 const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
-var Time = {
+var Time =
+{
     pomodoro: 25, //min
     short_break: 5, //min
     long_break: 15, //min
     default_notice: 3 //sec
 }
 
-var Pomodoro = {
+var Pomodoro =
+{
     acitve: false,
     pomodoros: 0,
 
@@ -147,4 +149,4 @@ function main(extensionMeta)
     let _pomodoroButtonOnPanel = new _pomodoroButton();
 };
 
-// vim: ts=4 bs=4 shiftwidth=4
+// vim: set ts=4 shiftwidth=4:
