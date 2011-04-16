@@ -7,3 +7,14 @@
     border-radius: 15px;
     padding: 50px;
 }
+
+.pomodoro-time-label {
+    font-size: 26px;
+    width: 100px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(10,10,10,0.7);
+    border-radius: 5px;
+    padding: 25px 50px;
+}

@@ -23,15 +23,59 @@ var Time = {
 }
 
 var Pomodoro = {
-    acitve: false,
+    active: false,
     pomodoros: 0,
+    paused: false,
+    time_start: null, //time
+    time_limit: null, //in mins
 
     activate: function() {
-        Pomodoro.active = true;
+        this.active = true;
+        if (this.paused) {
+            this.paused = false;
+            this.time_start = new Date();
+        }
     },
 
     disable: function() {
-        Pomodoro.active = false;
+        this.active = false;
+    },
+
+    pause: function() {
+        this.disable();
+        this.paused = true;
+        this.time_limit = this.get_time_left(); //in miliseconds
+    },
+
+    set_time_label_value: function() {
+        if (!this.paused) {
+            let time = this.get_time_left();
+            time = new Date(time);
+            let string = '';
+            let delimeter = ' ';
+            if (time.getHours() > 3) {
+                if (time.getHours() < 10) string += 0;
+                string += (time.getHours() - 3) + delimeter; //3 here becouse all Dates in untix start from 3 hour
+            }
+            if (time.getMinutes() < 10) string += 0;
+            string += time.getMinutes() + delimeter;
+            if (time.getSeconds() < 10) string += 0;
+            string += time.getSeconds() + delimeter;
+            this.time_label.text = string;
+        }
+    },
+
+    set_limit: function(limit) {
+        if (limit) {
+            this.time_limit = limit * 1000;
+            this.time_start = new Date();
+        }
+    },
+
+    get_time_left: function() { //in miliseconds
+        let time = new Date - this.time_start;
+        time = this.time_limit - time;
+        return time;
     }
 };
 
@@ -65,23 +109,30 @@ _pomodoroButton.prototype = {
 
 function _start_pomodoro() {
     if (!Pomodoro.active) {
+        if (Pomodoro.paused) {
+            _showNotice('Resume');
+        } else {
+            _showNotice('Lets Pomodoro');
+            Pomodoro.set_limit(Time.pomodoro);
+        }
         Pomodoro.activate();
-        _showNotice('Lets Pomodoro');
-        Mainloop.timeout_add_seconds(Time.pomodoro, go_pomodoro);
+        show_time();
+        Mainloop.timeout_add_seconds(Pomodoro.time_limit / 1000, go_pomodoro);
     }
 };
 
 function _stop_pomodoro() {
-    if (Pomodoro.active) {
+    if (Pomodoro.active || Pomodoro.paused) {
         Pomodoro.disable();
         Pomodoro.pomodoros = 0;
         _showNotice('Stoped');
+        hide_time();
     }
 };
 
 function _pause_pomodoro() {
     if (Pomodoro.active) {
-        Pomodoro.disable();
+        Pomodoro.pause();
         _showNotice('Paused');
     }
 };
@@ -121,15 +172,37 @@ function take_short_break() {
 
 function take_break(start_message, stop_message, break_time) {
     _showNotice(start_message + ' (' + break_time / 60 + ' min)');
+    Pomodoro.set_limit(break_time);
+    show_time();
     Pomodoro.disable();
     Mainloop.timeout_add_seconds(break_time, function() {
         Pomodoro.activate();
         _showNotice(stop_message, Time.after_break_notice);
+        Pomodoro.set_limit(Time.pomodoro);
+        show_time();
         Mainloop.timeout_add_seconds(Time.pomodoro, go_pomodoro);
     });
 }
 
-var _pomodoroButtonOnPanel;
+function show_time() {
+    if ((!Pomodoro.paused) && Pomodoro.active) {
+        if (!Pomodoro.time_label) {
+            Pomodoro.time_label = new St.Label({ style_class: 'pomodoro-time-label', text: '' });
+            global.stage.add_actor(Pomodoro.time_label);
+        }
+
+        Pomodoro.set_time_label_value();
+        let monitor = global.get_primary_monitor();
+        Pomodoro.time_label.set_position(Math.floor(monitor.width - Pomodoro.time_label.width),
+                                         Math.floor(monitor.height - Pomodoro.time_label.height));
+        Mainloop.timeout_add_seconds(1, show_time);
+    }
+}
+
+function hide_time() {
+    Pomodoro.time_label.destroy();
+    delete Pomodoro.time_label;
+}
 
 function main(extensionMeta) {
     let _pomodoroButtonOnPanel = new _pomodoroButton();
