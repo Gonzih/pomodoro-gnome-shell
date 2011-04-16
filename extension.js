@@ -124,6 +124,7 @@ function _start_pomodoro() {
 function _stop_pomodoro() {
     if (Pomodoro.active || Pomodoro.paused) {
         Pomodoro.disable();
+        Pomodoro.paused = false;
         Pomodoro.pomodoros = 0;
         _showNotice('Stoped');
         hide_time();
