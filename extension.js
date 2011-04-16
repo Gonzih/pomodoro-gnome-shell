@@ -67,7 +67,7 @@ function _start_pomodoro() {
     if (!Pomodoro.active) {
         Pomodoro.activate();
         _showNotice('Lets Pomodoro');
-        Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
+        Mainloop.timeout_add_seconds(Time.pomodoro * 60, go_pomodoro);
     }
 };
 
@@ -88,7 +88,7 @@ function _pause_pomodoro() {
 
 function _showNotice(text, delay) {
     if (!text) text = '=)';
-    if (!delay) delay = Time.default_notice * 1000;
+    if (!delay) delay = Time.default_notice;
     let label = new St.Label({ style_class: 'pomodoro-label', text: text });
     let monitor = global.get_primary_monitor();
 
@@ -96,7 +96,7 @@ function _showNotice(text, delay) {
     label.set_position(Math.floor (monitor.width / 2 - label.width / 2),
                       Math.floor(monitor.height / 2 - label.height / 2));
 
-    Mainloop.timeout_add(delay, function () { label.destroy(); });
+    Mainloop.timeout_add_seconds(delay, function () { label.destroy(); });
 };
 
 function go_pomodoro() {
@@ -122,10 +122,10 @@ function take_short_break() {
 function take_break(start_message, stop_message, break_time) {
     _showNotice(start_message + ' (' + break_time + ' min)');
     Pomodoro.disable();
-    Mainloop.timeout_add(break_time * 60 * 1000, function() {
+    Mainloop.timeout_add_seconds(break_time * 60, function() {
         Pomodoro.activate();
         _showNotice(stop_message, Time.after_break_notice * 60 * 1000);
-        Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
+        Mainloop.timeout_add_seconds(Time.pomodoro * 60, go_pomodoro);
     });
 }
 
