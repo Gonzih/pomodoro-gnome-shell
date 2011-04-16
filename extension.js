@@ -78,14 +78,15 @@ function _start_pomodoro()
 
 function _stop_pomodoro()
 {
-    _pause_pomodoro();
+    Pomodoro.disable();
     Pomodoro.pomodoros = 0;
+    _showNotice('Stoped');
 };
 
 function _pause_pomodoro()
 {
     Pomodoro.disable();
-    _showNotice('Waiting');
+    _showNotice('Paused');
 };
 
 function _showNotice(text, delay)
