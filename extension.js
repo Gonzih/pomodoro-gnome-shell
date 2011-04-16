@@ -140,14 +140,21 @@ function _pause_pomodoro() {
 function _showNotice(text, delay) {
     if (!text) text = '=)';
     if (!delay) delay = Time.default_notice;
-    let label = new St.Label({ style_class: 'pomodoro-label', text: text });
+    if (!Pomodoro.notice_label) {
+    Pomodoro.notice_label = new St.Label({ style_class: 'pomodoro-label', text: text });
+    global.stage.add_actor(Pomodoro.notice_label);
+    } else {
+        Pomodoro.notice_label.text = text;
+    }
+
     let monitor = global.get_primary_monitor();
+    Pomodoro.notice_label.set_position(Math.floor (monitor.width / 2 - Pomodoro.notice_label.width / 2),
+                      Math.floor(monitor.height / 2 - Pomodoro.notice_label.height / 2));
 
-    global.stage.add_actor(label);
-    label.set_position(Math.floor (monitor.width / 2 - label.width / 2),
-                      Math.floor(monitor.height / 2 - label.height / 2));
-
-    Mainloop.timeout_add_seconds(delay, function () { label.destroy(); });
+    Mainloop.timeout_add_seconds(delay, function () {
+        Pomodoro.notice_label.destroy();
+        delete Pomodoro.notice_label;
+    });
 };
 
 function go_pomodoro() {
