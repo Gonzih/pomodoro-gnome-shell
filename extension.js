@@ -120,7 +120,7 @@ function take_short_break() {
 };
 
 function take_break(start_message, stop_message, break_time) {
-    _showNotice(start_message + ' (' + break_time + ' min)');
+    _showNotice(start_message + ' (' + break_time / 60 + ' min)');
     Pomodoro.disable();
     Mainloop.timeout_add_seconds(break_time, function() {
         Pomodoro.activate();
