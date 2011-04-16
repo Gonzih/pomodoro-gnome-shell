@@ -14,41 +14,34 @@ const Lang = imports.lang;
 const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
-var Time =
-{
+var Time = {
     pomodoro: 25, //min
     short_break: 5, //min
     long_break: 15, //min
     default_notice: 3 //sec
 }
 
-var Pomodoro =
-{
+var Pomodoro = {
     acitve: false,
     pomodoros: 0,
 
-    activate: function()
-    {
+    activate: function() {
         Pomodoro.active = true;
     },
 
-    disable: function()
-    {
+    disable: function() {
         Pomodoro.active = false;
     }
 };
 
-function _pomodoroButton()
-{
+function _pomodoroButton() {
     this._init();
 }
 
-_pomodoroButton.prototype =
-{
+_pomodoroButton.prototype = {
     __proto__: PanelMenu.Button.prototype,
 
-    _init: function()
-    {
+    _init: function() {
         PanelMenu.Button.prototype._init.call(this, 0.0);
         this._label = new St.Label({ style_class: 'panel-label', text: "Pomodoro" });
         this.actor.set_child(this._label);
@@ -69,28 +62,24 @@ _pomodoroButton.prototype =
 
 };
 
-function _start_pomodoro()
-{
+function _start_pomodoro() {
     Pomodoro.activate();
     _showNotice('Lets Pomodoro');
     Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
 };
 
-function _stop_pomodoro()
-{
+function _stop_pomodoro() {
     Pomodoro.disable();
     Pomodoro.pomodoros = 0;
     _showNotice('Stoped');
 };
 
-function _pause_pomodoro()
-{
+function _pause_pomodoro() {
     Pomodoro.disable();
     _showNotice('Paused');
 };
 
-function _showNotice(text, delay)
-{
+function _showNotice(text, delay) {
     if (!text) text = '=)';
     if (!delay) delay = Time.default_notice * 1000;
     let label = new St.Label({ style_class: 'pomodoro-label', text: text });
@@ -103,39 +92,30 @@ function _showNotice(text, delay)
     Mainloop.timeout_add(delay, function () { label.destroy(); });
 };
 
-function go_pomodoro()
-{
-    if (Pomodoro.active)
-    {
+function go_pomodoro() {
+    if (Pomodoro.active) {
         Pomodoro.pomodoros += 1;
-        if (Pomodoro.pomodoros === 4)
-        {
+        if (Pomodoro.pomodoros === 4) {
             take_long_break();
-        }
-        else
-        {
+        } else {
             take_short_break();
         }
     }
 };
 
-function take_long_break()
-{
+function take_long_break() {
     Pomodoro.pomodoros = 0;
     take_break('Go to long break (' + Time.long_break + ' min)', 'Back to work', Time.long_break);
 };
 
-function take_short_break()
-{
+function take_short_break() {
     take_break('Go to long break (' + Time.short_break + ' min)', 'Back to work', Time.short_break);
 };
 
-function take_break(start_message, stop_message, break_time)
-{
+function take_break(start_message, stop_message, break_time) {
     _showNotice(start_message);
     Pomodoro.disable();
-    Mainloop.timeout_add(break_time * 60 * 1000, function()
-    {
+    Mainloop.timeout_add(break_time * 60 * 1000, function() {
         Pomodoro.activate();
         _showNotice(stop_message, 3 * 60 * 1000);
         Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
@@ -144,8 +124,7 @@ function take_break(start_message, stop_message, break_time)
 
 var _pomodoroButtonOnPanel;
 
-function main(extensionMeta)
-{
+function main(extensionMeta) {
     let userExtensionLocalePath = extensionMeta.path + '/locale';
     let _pomodoroButtonOnPanel = new _pomodoroButton();
 };
