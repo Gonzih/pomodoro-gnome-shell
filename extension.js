@@ -15,10 +15,10 @@ const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
 var Time = {
-    pomodoro: 25, //min
-    short_break: 5, //min
-    long_break: 15, //min
-    after_break_notice: 3, //min
+    pomodoro: 25 * 60, //min
+    short_break: 5 * 60, //min
+    long_break: 15 * 60, //min
+    after_break_notice: 3 * 60, //min
     default_notice: 3 //sec
 }
 
@@ -67,7 +67,7 @@ function _start_pomodoro() {
     if (!Pomodoro.active) {
         Pomodoro.activate();
         _showNotice('Lets Pomodoro');
-        Mainloop.timeout_add_seconds(Time.pomodoro * 60, go_pomodoro);
+        Mainloop.timeout_add_seconds(Time.pomodoro, go_pomodoro);
     }
 };
 
@@ -122,10 +122,10 @@ function take_short_break() {
 function take_break(start_message, stop_message, break_time) {
     _showNotice(start_message + ' (' + break_time + ' min)');
     Pomodoro.disable();
-    Mainloop.timeout_add_seconds(break_time * 60, function() {
+    Mainloop.timeout_add_seconds(break_time, function() {
         Pomodoro.activate();
-        _showNotice(stop_message, Time.after_break_notice * 60 * 1000);
-        Mainloop.timeout_add_seconds(Time.pomodoro * 60, go_pomodoro);
+        _showNotice(stop_message, Time.after_break_notice);
+        Mainloop.timeout_add_seconds(Time.pomodoro, go_pomodoro);
     });
 }
 
