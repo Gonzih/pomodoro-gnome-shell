@@ -18,6 +18,7 @@ var Time = {
     pomodoro: 25, //min
     short_break: 5, //min
     long_break: 15, //min
+    after_break_notice: 3, //min
     default_notice: 3 //sec
 }
 
@@ -63,20 +64,26 @@ _pomodoroButton.prototype = {
 };
 
 function _start_pomodoro() {
-    Pomodoro.activate();
-    _showNotice('Lets Pomodoro');
-    Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
+    if (!Pomodoro.active) {
+        Pomodoro.activate();
+        _showNotice('Lets Pomodoro');
+        Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
+    }
 };
 
 function _stop_pomodoro() {
-    Pomodoro.disable();
-    Pomodoro.pomodoros = 0;
-    _showNotice('Stoped');
+    if (Pomodoro.active) {
+        Pomodoro.disable();
+        Pomodoro.pomodoros = 0;
+        _showNotice('Stoped');
+    }
 };
 
 function _pause_pomodoro() {
-    Pomodoro.disable();
-    _showNotice('Paused');
+    if (Pomodoro.active) {
+        Pomodoro.disable();
+        _showNotice('Paused');
+    }
 };
 
 function _showNotice(text, delay) {
@@ -105,19 +112,19 @@ function go_pomodoro() {
 
 function take_long_break() {
     Pomodoro.pomodoros = 0;
-    take_break('Go to long break (' + Time.long_break + ' min)', 'Back to work', Time.long_break);
+    take_break('Take long break', 'Go back to work', Time.long_break);
 };
 
 function take_short_break() {
-    take_break('Go to long break (' + Time.short_break + ' min)', 'Back to work', Time.short_break);
+    take_break('Take short break' , 'Go back to work', Time.short_break);
 };
 
 function take_break(start_message, stop_message, break_time) {
-    _showNotice(start_message);
+    _showNotice(start_message + ' (' + break_time + ' min)');
     Pomodoro.disable();
     Mainloop.timeout_add(break_time * 60 * 1000, function() {
         Pomodoro.activate();
-        _showNotice(stop_message, 3 * 60 * 1000);
+        _showNotice(stop_message, Time.after_break_notice * 60 * 1000);
         Mainloop.timeout_add(Time.pomodoro * 60 * 1000, go_pomodoro);
     });
 }
@@ -125,7 +132,6 @@ function take_break(start_message, stop_message, break_time) {
 var _pomodoroButtonOnPanel;
 
 function main(extensionMeta) {
-    let userExtensionLocalePath = extensionMeta.path + '/locale';
     let _pomodoroButtonOnPanel = new _pomodoroButton();
 };
 
