@@ -182,7 +182,6 @@ function take_break(start_message, stop_message, break_time) {
     _showNotice(start_message + ' (' + break_time / 60 + ' min)');
     Pomodoro.set_limit(break_time);
     show_time();
-    Pomodoro.disable();
     Mainloop.timeout_add_seconds(break_time, function() {
         Pomodoro.activate();
         _showNotice(stop_message, Time.after_break_notice);
