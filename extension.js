@@ -136,7 +136,7 @@ function _stop_pomodoro() {
         Pomodoro.disable();
         Pomodoro.paused = false;
         Pomodoro.pomodoros = 0;
-        _showNotice('Stoped');
+        _showNotice('Stopped');
         hide_time();
     }
 };
