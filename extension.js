@@ -22,13 +22,13 @@ var Time = {
     default_notice: 3 //sec
 }
 //debug
-Time = {
-    pomodoro: 15,
-    short_break: 5,
-    long_break: 10,
-    after_break_notice: 3,
-    default_notice: 3
-}
+//Time = {
+    //pomodoro: 15,
+    //short_break: 5,
+    //long_break: 10,
+    //after_break_notice: 3,
+    //default_notice: 3
+//}
 
 var Pomodoro = {
     active: false,
