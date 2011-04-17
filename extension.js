@@ -15,12 +15,20 @@ const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
 var Time = {
-    pomodoro: 25 * 60, //min
-    short_break: 5 * 60, //min
-    long_break: 15 * 60, //min
-    after_break_notice: 3 * 60, //min
+    pomodoro: 25 * 60, //sec
+    short_break: 5 * 60, //sec
+    long_break: 15 * 60, //sec
+    after_break_notice: 5, //sec
     default_notice: 3 //sec
 }
+//debug
+//Time = {
+    //pomodoro: 15,
+    //short_break: 5,
+    //long_break: 10,
+    //after_break_notice: 3,
+    //default_notice: 3
+//}
 
 var Pomodoro = {
     active: false,
@@ -53,10 +61,12 @@ var Pomodoro = {
             time = new Date(time);
             let string = '';
             let delimeter = ' ';
+            /*
             if (time.getHours() > 3) {
                 if (time.getHours() < 10) string += 0;
                 string += (time.getHours() - 3) + delimeter; //3 here becouse all Dates in untix start from 3 hour
             }
+            */
             if (time.getMinutes() < 10) string += 0;
             string += time.getMinutes() + delimeter;
             if (time.getSeconds() < 10) string += 0;
@@ -179,7 +189,7 @@ function take_short_break() {
 };
 
 function take_break(start_message, stop_message, break_time) {
-    _showNotice(start_message + ' (' + break_time / 60 + ' min)');
+    _showNotice(start_message + ' (' + break_time / 60 + ' min)', break_time);
     Pomodoro.set_limit(break_time);
     show_time();
     Mainloop.timeout_add_seconds(break_time, function() {
