@@ -18,3 +18,15 @@
     border-radius: 5px;
     padding: 25px 50px;
 }
+
+.pomodoro-log-label {
+    font-size: 26px;
+    width: 300px;
+    text-align:p center;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgba(10,10,10,0.7);
+    border-radius: 5px;
+    padding: 25px 50px;
+    border: 1px solid white;
+}

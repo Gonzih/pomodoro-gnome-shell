@@ -219,8 +219,21 @@ function hide_time() {
     delete Pomodoro.time_label;
 }
 
+var Log_label;
+
+function log(text) {
+    text = text.toString();
+    if (Log_label) {
+        Log_label.text += "\n" + text;
+    } else {
+        Log_label = new St.Label({ style_class: 'pomodoro-log-label', text: text });
+        global.stage.add_actor(Log_label);
+        Log_label.set_position(5, 30);
+    }
+}
+
 function main(extensionMeta) {
     let _pomodoroButtonOnPanel = new _pomodoroButton();
-};
+}
 
 // vim: set ts=4 shiftwidth=4:
