@@ -14,6 +14,12 @@ const Lang = imports.lang;
 const PopupMenu = imports.ui.popupMenu;
 const PanelMenu = imports.ui.panelMenu;
 
+var Messages = {
+    back: 'Go back to work',
+    'short': 'Take short break',
+    'long': 'Take long break'
+}
+
 var Time = {
     pomodoro: 25 * 60, //sec
     short_break: 5 * 60, //sec
@@ -23,14 +29,16 @@ var Time = {
 }
 //debug
 //Time = {
-    //pomodoro: 15,
-    //short_break: 5,
-    //long_break: 10,
-    //after_break_notice: 3,
-    //default_notice: 3
+    //pomodoro: 25,
+    //short_break: 15,
+    //long_break: 20,
+    //after_break_notice: 5,
+    //default_notice: 5
 //}
 
 var Pomodoro = {
+    pause_counter: 0,
+    pause_array: [true],
     active: false,
     pomodoros: 0,
     paused: false,
@@ -47,6 +55,9 @@ var Pomodoro = {
 
     disable: function() {
         this.active = false;
+        this.pause_array[this.pause_counter] = false;
+        this.pause_counter += 1;
+        this.pause_array[this.pause_counter] = true;
     },
 
     pause: function() {
@@ -119,15 +130,18 @@ _pomodoroButton.prototype = {
 
 function _start_pomodoro() {
     if (!Pomodoro.active) {
+        let func;
         if (Pomodoro.paused) {
             _showNotice('Resume');
+            func = back_to_work;
         } else {
             _showNotice('Lets Pomodoro');
             Pomodoro.set_limit(Time.pomodoro);
+            func = go_pomodoro;
         }
         Pomodoro.activate();
         show_time();
-        Mainloop.timeout_add_seconds(Pomodoro.time_limit / 1000, go_pomodoro);
+        add_timeout(Pomodoro.time_limit / 1000, func);
     }
 };
 
@@ -162,7 +176,7 @@ function _showNotice(text, delay) {
     Pomodoro.notice_label.set_position(Math.floor (monitor.width / 2 - Pomodoro.notice_label.width / 2),
                       Math.floor(monitor.height / 2 - Pomodoro.notice_label.height / 2));
 
-    Mainloop.timeout_add_seconds(delay, function () {
+    add_timeout(delay, function () {
         Pomodoro.notice_label.destroy();
         delete Pomodoro.notice_label;
     });
@@ -181,22 +195,24 @@ function go_pomodoro() {
 
 function take_long_break() {
     Pomodoro.pomodoros = 0;
-    take_break('Take long break', 'Go back to work', Time.long_break);
+    take_break(Messages['long'], Time.long_break);
 };
 
 function take_short_break() {
-    take_break('Take short break' , 'Go back to work', Time.short_break);
+    take_break(Messages['short'], Time.short_break);
 };
 
-function take_break(start_message, stop_message, break_time) {
+function take_break(start_message, break_time) {
     _showNotice(start_message + ' (' + break_time / 60 + ' min)', break_time);
     Pomodoro.set_limit(break_time);
-    Mainloop.timeout_add_seconds(break_time, function() {
+    add_timeout(break_time, function() { back_to_work() } );
+}
+
+function back_to_work() {
         Pomodoro.activate();
-        _showNotice(stop_message, Time.after_break_notice);
+        _showNotice(Messages.back, Time.after_break_notice);
         Pomodoro.set_limit(Time.pomodoro);
-        Mainloop.timeout_add_seconds(Time.pomodoro, go_pomodoro);
-    });
+        add_timeout(Time.pomodoro, go_pomodoro);
 }
 
 function show_time() {
@@ -210,13 +226,21 @@ function show_time() {
         let monitor = global.get_primary_monitor();
         Pomodoro.time_label.set_position(Math.floor(monitor.width - Pomodoro.time_label.width),
                                          Math.floor(monitor.height - Pomodoro.time_label.height));
-        Mainloop.timeout_add_seconds(1, show_time);
+        add_timeout(1, show_time);
     }
 }
 
 function hide_time() {
     Pomodoro.time_label.destroy();
     delete Pomodoro.time_label;
+}
+
+function add_timeout(time, func) {
+    let (number = Pomodoro.pause_counter) {
+        Mainloop.timeout_add_seconds(time, function() {
+            if (Pomodoro.pause_array[number] === true) { func(); }
+        });
+    }
 }
 
 var Log_label;
