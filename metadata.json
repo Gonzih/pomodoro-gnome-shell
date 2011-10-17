@@ -1,5 +1,5 @@
 {
-"shell-version": ["3.0.2"],
+"shell-version": ["3.2"],
 "uuid": "pomodoro@iam.gonzih.org",
 "name": "Pomodoro",
 "description": "Gnome3 shell extension for pomodoro time managment",
